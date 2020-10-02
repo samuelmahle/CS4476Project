@@ -59,17 +59,28 @@ A figure that conveys the main idea behind the project or the main application b
 <br><br>
 <!-- Introduction -->
 <h3>Introduction</h3>
-Motivation behind the problem you are solving, what applications it has, any brief background on the particular domain you are working in (if not regular RBG photographs), etc. If you are using a new way to solve an existing problem, briefly mention and describe the existing approaches and tell us how your approach is new.
+The goal of this project is to implement and further evaluate a novel method for tracking the pose of a passive stylus, originally proposed by Oculus Researchers for use in VR/AR settings [1]. The input to the system is a single camera feed from a standard quality camera of a user operating a stylus with a 3D-printed dodecahedron fixed to its top. By tracking special symbols on the surface of the dodecahedron, the system outputs the time-series pose of the stylus’s tip, which is used to reconstruct what the user is writing or drawing. We seek to both implement the Oculus paper and evaluate tracking different geometries for the shape affixed to the top of the stylus.
 
 <br><br>
 <!-- Approach -->
 <h3>Approach</h3>
-Describe very clearly and systematically your approach to solve the problem. Tell us exactly what existing implementations you used to build your system. Tell us what obstacles you faced and how you addressed them. Justify any design choices or judgment calls you made in your approach.
+The stylus will be constructed by affixing a 3D printed dodecahedron to a common ballpoint pen with glue. Tracking symbols will be printed and also glued to the surface of the dodecahedron.
+
+The Oculus paper outlines a three-stage system for tracking the pose of the dodecahedron, and thus the orientation and position of the pen tip. First, we will use the ArUco library [2] to perform Approximate Pose Estimation (APE) on the decahedron and obtain a pose p of the tracking symbols on the decahedron. We then continue to minimize the reprojection error between the projected and observed image points according to the L2 difference. As described in the paper, this creates a PnP problem that the researchers recommend minimizing using the Levenberg-Marquardt method.
+
+The paper notes that motion blur may result in APE failing. In stage two of the system, we check for the success of APE, and on failure, attempt an additional tracking method called Inter-frame Corner Tracking (ICT), as done in the paper. We will implement this from scratch in C++ according to the pyramidal LK optical flow tracking algorithm used in the Oculus paper [3]. This algorithm down samples the image, propagating optical flow guesses from the lowest resolution samples of the image up to the original resolution image using the Lucas-Kanade method.
+
+In stage three, the system uses dense alignment as a means for further improving the accuracy of the pose of the stylus. Additional dodecahedron calibration and pen-tip calibration are also used to refine the pose estimation. The dodecahedron is calibrated by taking photos of each tracking symbol to derive its pose relative to the dodecahedron, while the pen-tip is calibrated by empirically considering the displacement of the center of the ball tip from the center of the dodecahedron in world space.
+
 
 <br><br>
 <!-- Results -->
 <h3>Experiments and results</h3>
-Provide details about the experimental set up (number of images/videos, number of datasets you experimented with, train/test split if you used machine learning algorithms, etc.). Describe the evaluation metrics you used to evaluate how well your approach is working. Include clear figures and tables, as well as illustrative qualitative examples if appropriate. Be sure to include obvious baselines to see if your approach is doing better than a naive approach (e.g. for classification accuracy, how well would a classifier do that made random decisions?). Also discuss any parameters of your algorithms, and tell us how you set the values of those parameters. You can also show us how the performance varies as you change those parameter values. Be sure to discuss any trends you see in your results, and explain why these trends make sense. Are the results as expected? Why?
+We will use the ArUco library in addition to implementing our own tracking and calibration algorithms in C++. We plan to implement the shell of the stylus tracking system as described the Oculus paper [1], the pyramidal LK optical flow tracking algorithm referenced in the Oculus paper [3], and the necessary dense alignment and calibration systems outlined in the Oculus paper.
+
+We will build our own dataset by filming ourselves drawing with the stylus and scanning the ink result into a digital representation. We will conduct four experiments, each experiment consisting of a single drawing that is filmed from at least three different angles. The system’s accuracy is measured by comparing the scanned drawing to the predicted movement of the stylus. Each experiment will be repeated for two different shapes other than a decahedron, each having less than twelve faces.
+
+A successful project consists of implementing and verifying Oculus’s research by being able to predict the path of the stylus, reasonably reproduce the original drawing, and analyzing the impact of different tracking shapes on the system’s accuracy. As a bonus, it would be of interest to see if our system could be optimized for real-time tracking. We expect that Oculus’s research is accurate and that the stylus is reliably trackable. We also hypothesize that any shape with fewer than twelve faces will be notably harder to track resulting in a decrease in accuracy. On the contrary, if we show that reducing face count does not hurt accuracy, we would have found a great simplification to the physical construction of the stylus.
 
 <br><br>
 
@@ -81,7 +92,7 @@ Provide details about the experimental set up (number of images/videos, number o
 
 <!-- Results -->
 <h3>Qualitative results</h3>
-Show several visual examples of inputs/outputs of your system (success cases and failures) that help us better understand your approach.
+----
 <br><br>
 
 <!-- Main Results Figure --> 
@@ -100,6 +111,15 @@ Show several visual examples of inputs/outputs of your system (success cases and
 </div>
 </div>
 
+<br><br>
+  
+ <!-- References -->
+<h3>References</h3>
+[1] Po-Chen Wu, Robert Wang, Kenrick Kin, Christopher Twigg, Shangchen Han, Ming-Hsuan Yang, and Shao-Yi Chien. 2017. DodecaPen: Accurate 6DoF Tracking of a Passive Stylus. ACM Symposium on User Interface Software and Technology.
+
+[2] Sergio Garrido-Jurado, Rafael Muñoz-Salinas, Francisco José Madrid-Cuevas, and Manuel Jesús Marín-Jiménez. 2014. Automatic Generation and Detection of Highly Reliable Fiducial Markers Under Occlusion. Pattern Recognition 47, 6 (2014), 2280–2292.
+
+[3] Jean-Yves Bouguet. 2001. Pyramidal Implementation of the Lucas Kanade Feature Tracker: Description of the Algorithm. Intel Corporation 5, 1-10 (2001), 4.
 <br><br>
 
 </body></html>
