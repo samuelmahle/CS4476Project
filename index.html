@@ -100,19 +100,11 @@ We used a chessboard calibrated the camera as the distinct black and white squar
 We continuously moved the camera around until the camera had captured 30 distinct images of the chessboard. 
 Finally, we passed the image and points from the identified chessboard into Open CV's camera callibration method, 
 which solved for the camera matrix and the distortion matrix uses a linear least squares solution to the problem 
-$$\begin{bmatrix}
-x \\
-y \\ 
-w \\
-\end{bmatrix} = \begin{bmatrix}
-f_x & 0 & c_x \\
-0 & f_y & c_y \\
-0 & 0 & 1 \\
-\end{bmatrix} \begin{bmatrix}
-X \\
-Y \\ 
-Z \\
-\end{bmatrix}$$ where $f_x$ and $f_y$ are focal lengths and $c_x$ and $c_y$ are camera centers.
+<div style="text-align: center;">
+<img style="height: 325px;" alt="" src="callibrationMatrix.png">
+</div>
+where $f_x$ and $f_y$ are focal lengths and $c_x$ and $c_y$ are camera centers.
+ 
 <div style="text-align: center;">
 <img style="height: 325px;" alt="" src="exampleImage.jpeg">
 </div>
